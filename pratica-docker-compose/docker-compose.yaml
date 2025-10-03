@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  servidor_ubuntu:
+    image: ubuntu:latest
+    container_name: servidor_ubuntu
+    command: tail -f /dev/null
+    networks:
+      - rede_ubuntu_postgres
+    depends_on:
+      - banco_postgres
+
+  banco_postgres:
+    image: postgres:13
+    container_name: banco_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: senai_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - rede_ubuntu_postgres
+
+  servidor_centos:
+    image: centos:7
+    container_name: servidor_centos
+    command: tail -f /dev/null
+    networks:
+      - rede_centos_mysql
+    depends_on:
+      - banco_mysql
+
+  banco_mysql:
+    image: mysql:8.0
+    container_name: banco_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: senai_db
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - rede_centos_mysql
+
+networks:
+  rede_ubuntu_postgres:
+    driver: bridge
+  rede_centos_mysql:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  mysql_data:
